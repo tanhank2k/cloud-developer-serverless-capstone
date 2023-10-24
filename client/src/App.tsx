@@ -7,15 +7,17 @@ import { EditTodo } from './components/EditTodo'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
 import { Todos } from './components/Todos'
+import { Notes } from './components/Notes'
+import { EditNote } from './components/EditNote'
 
-export interface AppProps {}
+export interface AppProps { }
 
 export interface AppProps {
   auth: Auth
   history: any
 }
 
-export interface AppState {}
+export interface AppState { }
 
 export default class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -59,6 +61,9 @@ export default class App extends Component<AppProps, AppState> {
         <Menu.Item name="home">
           <Link to="/">Home</Link>
         </Menu.Item>
+        <Menu.Item name="note">
+          <Link to="/notes">Note</Link>
+        </Menu.Item>
 
         <Menu.Menu position="right">{this.logInLogOutButton()}</Menu.Menu>
       </Menu>
@@ -95,12 +100,27 @@ export default class App extends Component<AppProps, AppState> {
             return <Todos {...props} auth={this.props.auth} />
           }}
         />
-
         <Route
           path="/todos/:todoId/edit"
           exact
           render={props => {
             return <EditTodo {...props} auth={this.props.auth} />
+          }}
+        />
+
+        <Route
+          path="/notes"
+          exact
+          render={props => {
+            return <Notes {...props} auth={this.props.auth} />
+          }}
+        />
+
+        <Route
+          path="/notes/:noteId/edit"
+          exact
+          render={props => {
+            return <EditNote {...props} auth={this.props.auth} />
           }}
         />
 

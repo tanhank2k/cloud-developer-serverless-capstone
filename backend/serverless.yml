@@ -129,7 +129,7 @@ functions:
           - dynamodb:updateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
   #NOTE REGION
-    GetNotes:
+  GetNotes:
     handler: src/lambda/http/notes/getNotes.handler
     events:
       - http:
@@ -163,11 +163,11 @@ functions:
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
   UpdateNote:
-    handler: src/lambda/http/todos/updateNote.handler
+    handler: src/lambda/http/notes/updateNote.handler
     events:
       - http:
           method: put
-          path: notes/{todoId}
+          path: notes/{noteId}
           cors: true
           authorizer: Auth
           request:
@@ -180,11 +180,11 @@ functions:
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
   DeleteNote:
-    handler: src/lambda/http/todos/deleteNote.handler
+    handler: src/lambda/http/notes/deleteNote.handler
     events:
       - http:
           method: delete
-          path: notes/{todoId}
+          path: notes/{noteId}
           cors: true
           authorizer: Auth
     iamRoleStatementsInherit: true
@@ -199,7 +199,7 @@ functions:
     events:
       - http:
           method: post
-          path: notes/{todoId}/attachment
+          path: notes/{noteId}/attachment
           cors: true
           authorizer: Auth
     iamRoleStatementsInherit: true

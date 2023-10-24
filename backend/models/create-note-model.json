@@ -7,12 +7,13 @@
       "type": "string", 
       "minLength": 1
     },
-    "dueDate": {
+    "description": {
       "type": "string"
     }
   },
   "required": [
-    "name"
+    "name",
+    "description"
   ],
   "additionalProperties": false
 }

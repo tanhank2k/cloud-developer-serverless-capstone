@@ -7,7 +7,7 @@ import { deleteNote } from '../../../businessLogic/note';
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const noteId = event.pathParameters.todoId
+    const noteId = event.pathParameters.noteId
     const authorization = event.headers.Authorization
     const split = authorization.split(' ')
     const jwtToken = split[1]

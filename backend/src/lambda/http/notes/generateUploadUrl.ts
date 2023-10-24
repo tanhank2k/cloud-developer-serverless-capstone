@@ -7,11 +7,11 @@ import { createAttachmentPresignedUrl } from '../../../businessLogic/note';
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId
+    const noteId = event.pathParameters.noteId
     const authorization = event.headers.Authorization
     const split = authorization.split(' ')
     const jwtToken = split[1]
-    const uploadUrl = await createAttachmentPresignedUrl(todoId, jwtToken)
+    const uploadUrl = await createAttachmentPresignedUrl(noteId, jwtToken)
 
     return {
       statusCode: 200,

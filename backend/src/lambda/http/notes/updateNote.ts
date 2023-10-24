@@ -11,9 +11,9 @@ export const handler = middy(
     const authorization = event.headers.Authorization
     const split = authorization.split(' ')
     const jwtToken = split[1]
-    const todoId = event.pathParameters.todoId
+    const noteId = event.pathParameters.noteId
     const updatedTodo: UpdateNoteRequest = JSON.parse(event.body)
-    await updateNote(todoId, updatedTodo, jwtToken)
+    await updateNote(noteId, updatedTodo, jwtToken)
 
     return {
       statusCode: 200,

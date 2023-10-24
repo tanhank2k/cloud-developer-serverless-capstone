@@ -40,13 +40,13 @@ export class NotesAccess {
     return todo
   }
 
-  async deleteNote(todoId: string, userId: string): Promise<null> {
+  async deleteNote(noteId: string, userId: string): Promise<null> {
     const command = new DeleteCommand({
       TableName: this.notesTable,
-      Key: { userId, todoId }
+      Key: { userId, noteId: noteId }
     })
     await this.docClient.send(command)
-    logger.info(`Delete successful todo item ${todoId}`);
+    logger.info(`Delete successful todo item ${noteId}`);
     return null
   }
 
@@ -55,8 +55,8 @@ export class NotesAccess {
       TableName: this.notesTable,
       Key: { userId, noteId: noteId },
       ConditionExpression: 'attribute_exists(noteId)',
-      UpdateExpression: 'set #n = :n, d = :d',
-      ExpressionAttributeNames: { '#n': 'name' },
+      UpdateExpression: 'set #n = :n, #d = :d',
+      ExpressionAttributeNames: { '#n': 'name', '#d': 'description' },
       ExpressionAttributeValues: {
         ':n': updateItem.name,
         ':d': updateItem.description,

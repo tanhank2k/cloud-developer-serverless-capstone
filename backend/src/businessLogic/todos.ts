@@ -1,9 +1,9 @@
-import { TodoUpdate } from './../models/TodoUpdate';
+import { TodoUpdate } from '../models/todos/TodoUpdate';
 import { TodosAccess } from '../dataLayer/todosAcess'
 import { AttachmentUtils } from '../helpers/attachmentUtils';
-import { TodoItem } from '../models/TodoItem'
-import { CreateTodoRequest } from '../requests/CreateTodoRequest'
-import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
+import { TodoItem } from '../models/todos/TodoItem'
+import { CreateTodoRequest } from '../requests/todos/CreateTodoRequest'
+import { UpdateTodoRequest } from '../requests/todos/UpdateTodoRequest'
 import { createLogger } from '../utils/logger'
 import * as uuid from 'uuid'
 // import * as createError from 'http-errors'

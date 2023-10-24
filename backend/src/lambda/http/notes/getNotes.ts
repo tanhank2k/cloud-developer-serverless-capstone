@@ -1,20 +1,16 @@
 import 'source-map-support/register'
-
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import middy from '@middy/core'
 import cors from '@middy/http-cors';
 import httpErrorHandler from '@middy/http-error-handler'
-import { deleteTodo } from '../../businessLogic/todos'
+import { getNotesForUser } from '../../../businessLogic/note';
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId
-    // TODO: Remove a TODO item by id
     const authorization = event.headers.Authorization
     const split = authorization.split(' ')
     const jwtToken = split[1]
-
-    await deleteTodo(todoId, jwtToken)
+    const notes = await getNotesForUser(jwtToken)
     return {
       statusCode: 200,
       headers: {
@@ -22,6 +18,7 @@ export const handler = middy(
         'Access-Control-Allow-Credentials': true
       },
       body: JSON.stringify({
+        "items": notes
       })
     }
   }

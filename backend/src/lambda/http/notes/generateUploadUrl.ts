@@ -1,19 +1,18 @@
 import 'source-map-support/register'
-
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import middy from '@middy/core'
 import cors from '@middy/http-cors';
 import httpErrorHandler from '@middy/http-error-handler'
-import { getTodosForUser as getTodosForUser } from '../../businessLogic/todos'
+import { createAttachmentPresignedUrl } from '../../../businessLogic/note';
 
-// TODO: Get all TODO items for a current user
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-
+    const todoId = event.pathParameters.todoId
     const authorization = event.headers.Authorization
     const split = authorization.split(' ')
     const jwtToken = split[1]
-    const todos = await getTodosForUser(jwtToken)
+    const uploadUrl = await createAttachmentPresignedUrl(todoId, jwtToken)
+
     return {
       statusCode: 200,
       headers: {
@@ -21,7 +20,7 @@ export const handler = middy(
         'Access-Control-Allow-Credentials': true
       },
       body: JSON.stringify({
-        "items": todos
+        uploadUrl: uploadUrl
       })
     }
   }

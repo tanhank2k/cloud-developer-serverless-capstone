@@ -2,22 +2,22 @@ const AWSXRay = require("aws-xray-sdk-core");
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { PutCommand, QueryCommand, UpdateCommand, DeleteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { createLogger } from '../utils/logger'
-import { TodoItem } from '../models/todos/TodoItem'
-import { TodoUpdate } from '../models/todos/TodoUpdate';
+import { NoteItem } from '../models/notes/NoteItem';
+import { NoteUpdate } from '../models/notes/NoteUpdate';
 
 const logger = createLogger('TodosAccess')
 
 // TODO: Implement the dataLayer logic
-export class TodosAccess {
+export class NotesAccess {
   constructor(
     private readonly docClient: DynamoDBDocumentClient = createDynamoDBClient(),
-    private readonly todosTable = process.env.TODOS_TABLE,
+    private readonly notesTable = process.env.NOTES_TABLE,
     private readonly bucketName = process.env.ATTACHMENT_S3_BUCKET
     ) {}
 
-  async getAllTodos(userId: string): Promise<TodoItem[]> {
+  async getAllNotes(userId: string): Promise<NoteItem[]> {
     const command = new QueryCommand({
-      TableName: this.todosTable,
+      TableName: this.notesTable,
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId
@@ -26,13 +26,13 @@ export class TodosAccess {
     const result = await this.docClient.send(command)
 
     const items = result.Items
-    logger.info(`List todo item of user(${userId}) is ${JSON.stringify(items)}`);
-    return items as TodoItem[]
+    logger.info(`List note item of user(${userId}) is ${JSON.stringify(items)}`);
+    return items as NoteItem[]
   }
 
-  async createTodo(todo: TodoItem): Promise<TodoItem> {
+  async createNote(todo: NoteItem): Promise<NoteItem> {
     const command = new PutCommand({
-      TableName: this.todosTable,
+      TableName: this.notesTable,
       Item: todo
     })
     await this.docClient.send(command)
@@ -40,9 +40,9 @@ export class TodosAccess {
     return todo
   }
 
-  async deleteTodo(todoId: string, userId: string): Promise<null> {
+  async deleteNote(todoId: string, userId: string): Promise<null> {
     const command = new DeleteCommand({
-      TableName: this.todosTable,
+      TableName: this.notesTable,
       Key: { userId, todoId }
     })
     await this.docClient.send(command)
@@ -50,37 +50,36 @@ export class TodosAccess {
     return null
   }
 
-  async updateTodo(todoId: string, userId: string, updateItem: TodoUpdate): Promise<void> {
+  async updateNote(noteId: string, userId: string, updateItem: NoteUpdate): Promise<void> {
     const command = new UpdateCommand({
-      TableName: this.todosTable,
-      Key: { userId, todoId },
-      ConditionExpression: 'attribute_exists(todoId)',
-      UpdateExpression: 'set #n = :n, dueDate = :due, done = :dn',
+      TableName: this.notesTable,
+      Key: { userId, noteId: noteId },
+      ConditionExpression: 'attribute_exists(noteId)',
+      UpdateExpression: 'set #n = :n, d = :d',
       ExpressionAttributeNames: { '#n': 'name' },
       ExpressionAttributeValues: {
         ':n': updateItem.name,
-        ':due': updateItem.dueDate,
-        ':dn': updateItem.done
+        ':d': updateItem.description,
       }
     })
-    logger.info(`Update successful todo item(${todoId})  ${JSON.stringify(updateItem)}`);
+    logger.info(`Update successful note item(${noteId})  ${JSON.stringify(updateItem)}`);
 
     await this.docClient.send(command)
   }
 
-  async updatePresignUrlForTodoItem(todoId: string, userId: string): Promise<string> {
+  async updatePresignUrlForNoteItem(noteId: string, userId: string): Promise<string> {
     const command = new UpdateCommand({
-      TableName: this.todosTable,
-      Key: { userId, todoId },
-      ConditionExpression: 'attribute_exists(todoId)',
+      TableName: this.notesTable,
+      Key: { userId, noteId: noteId },
+      ConditionExpression: 'attribute_exists(noteId)',
       UpdateExpression: 'set attachmentUrl = :attachmentUrl',
       ExpressionAttributeValues: {
-        ':attachmentUrl': `https://${this.bucketName}.s3.amazonaws.com/${todoId}`
+        ':attachmentUrl': `https://${this.bucketName}.s3.amazonaws.com/${noteId}`
       }
     })
     await this.docClient.send(command)
-    logger.info(`Presign Url For Todo Item ${todoId} successful!`);
-    return `https://${this.bucketName}.s3.amazonaws.com/${todoId}`
+    logger.info(`Presign Url For Todo Item ${noteId} successful!`);
+    return `https://${this.bucketName}.s3.amazonaws.com/${noteId}`
   }
 }
 
